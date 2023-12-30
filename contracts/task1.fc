@@ -2,9 +2,6 @@
 
 (int, int, int, slice) load_data() inline_ref {
   var cs = get_data().begin_parse();
-  if (cs.slice_empty?()) {
-    return (new_dict(), new_dict(), 0);
-  }
   (int public_key, int execution_time, int seqno, slice receiver) = (cs~load_uint(256), cs~load_uint(32), cs~load_uint(32), cs~load_msg_addr());
   cs.end_parse();
   return (public_key, execution_time, seqno, receiver);
