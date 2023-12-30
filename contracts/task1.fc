@@ -19,6 +19,7 @@
 }
 
 () recv_external(int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    accept_message();
     int op = in_msg_body~load_uint(32);
 
     (int public_key, int execution_time, int seqno, slice receiver) = load_data();
