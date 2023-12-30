@@ -30,7 +30,7 @@
     var second = begin_parse(second_cell);
     (int locked_for, int new_seqno) = (second~load_uint(32), second~load_uint(32));
 
-    if (op = 0x9df10277) {
+    if (op == 0x9df10277) {
         throw_if(119, new_seqno != seqno + 1);
         throw_if(120, check_data_signature(in_msg_body, signature, public_key));
         throw_if(121, locked_for <= 0);
@@ -41,9 +41,7 @@
         store_data(execution_time, seqno + 1);
     }
 
-
-
-    if (op = 0xbb4be234) {
+    if (op == 0xbb4be234) {
         throw_if(124, execution_time >= now());
 
         var message = begin_cell()
