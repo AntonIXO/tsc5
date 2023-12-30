@@ -24,7 +24,7 @@
     (int public_key, int execution_time, int seqno, slice receiver) = load_data();
 
     (int query_id, int signature, cell second) = (in_msg_body~load_uint(64), in_msg_body~load_uint(512), in_msg_body~load_ref());
-    var (locked_for, new_seqno) = (second~load_uint(32), second~load_uint(32));
+    (int locked_for, int new_seqno) = (second~load_uint(32), second~load_uint(32));
 
     if (op = 0x9df10277) {
         throw_if(119, new_seqno != seqno + 1);
