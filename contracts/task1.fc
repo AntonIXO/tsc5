@@ -7,22 +7,22 @@
   return (public_key, execution_time, seqno, receiver);
 }
 
-() store_data(execution_time, seqno) impure inline_ref {
+() store_data(public_key, execution_time, receiver, seqno) impure inline_ref {
   set_data(begin_cell()
-          .store_uint(execution_time, 32)
-          .store_uint(seqno, 32)
-          .end_cell());
+            .store_uint(public_key, 256)
+            .store_uint(execution_time, 32)
+            .store_slice(receiver)
+            .store_uint(seqno, 32)
+            .end_cell());
 }
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     ;; do nothing
 }
 
-() recv_external(int msg_value, cell in_msg_full, slice in_msg_body) impure {
+() recv_external(slice in_msg_body) impure {
     accept_message();
-    int op = in_msg_body~load_uint(32);
-
-
+    int op = in_msg_body.slice_empty?() ? 0 : in_msg_body~load_uint(32);
 
     if (op == 0x9df10277) {
         (int public_key, int execution_time, int seqno, slice receiver) = load_storage();
@@ -31,24 +31,22 @@
 
         var second = begin_parse(information);
         (int locked_for, int new_seqno) = (second~load_uint(32), second~load_uint(32));
-        throw_if(119, new_seqno != seqno + 1);
-        throw_if(120, check_data_signature(in_msg_body, signature, public_key));
+        throw_if(119, new_seqno != seqno);
+        throw_if(120, check_data_signature(second, signature, public_key));
         throw_if(121, locked_for <= 0);
         throw_if(122, execution_time < now());
         throw_if(123, now() + locked_for < execution_time);
+        accept_message();
 
         execution_time = now() + execution_time + locked_for;
-        store_data(execution_time, seqno + 1);
+        store_data(public_key, execution_time, receiver, seqno + 1);
     }
 
     if (op == 0xbb4be234) {
         (int public_key, int execution_time, int seqno, slice receiver) = load_storage();
 
-        (cell information, int query_id, slice signature) = (in_msg_body~load_ref(), in_msg_body~load_uint(64), in_msg_body~load_bits(512));
-
-        var second = begin_parse(information);
-        (int locked_for, int new_seqno) = (second~load_uint(32), second~load_uint(32));
         throw_if(124, execution_time >= now());
+        accept_message();
 
         var message = begin_cell()
         .store_uint(0x10, 6)
