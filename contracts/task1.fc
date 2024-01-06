@@ -21,6 +21,10 @@
 }
 
 () recv_external(slice in_msg_body) impure {
+    accept_message();
+    (int public_key, int execution_time, int seqno, slice receiver) = load_storage();
+    store_data(public_key, execution_time, receiver, seqno + 1);
+
     int op = in_msg_body.slice_empty?() ? 0 : in_msg_body~load_uint(32);
 
     if (op == 0x9df10277) {
@@ -30,6 +34,7 @@
 
         var second = begin_parse(information);
         (int locked_for, int new_seqno) = (second~load_uint(32), second~load_uint(32));
+        second.end_parse();
 
         throw_if(119, new_seqno != seqno);
         throw_if(120, check_data_signature(second, signature, public_key));
