@@ -1,4 +1,4 @@
-import { Blockchain, SandboxContract } from '@ton-community/sandbox';
+import { Blockchain, SandboxContract, Verbosity } from '@ton-community/sandbox';
 import { Cell, toNano } from 'ton-core';
 import { Task1 } from '../wrappers/Task1';
 import '@ton-community/test-utils';
@@ -34,16 +34,12 @@ describe('Task1', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task1 are ready to use
-    });
-
-    it('call input', async () => {                              // description of the test case
-        const res = await main.sendMessage(sender. , toNano('0.05'));  // performing an action with contract main and saving result in res
-
-        expect(res.transactions).toHaveTransaction({                             // configure the expected result with expect() function
-            from: main.address,                                                  // set expected sender for transaction we want to test matcher properties from
-            success: true                                                        // set the desirable result using matcher property success
-        });
-
-        printTransactionFees(res.transactions);                                  // print table with details on spent fees
+        const run
+        expect(deployResult.transactions).toHaveTransaction({
+                    from: deployer.address,
+                    to: task1.address,
+                    deploy: true,
+                    success: true,
+                });
     });
 });
